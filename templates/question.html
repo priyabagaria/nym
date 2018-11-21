@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html ng-app="gameApp">
+<head>
+	<title>Q&A</title>
+	<style type="text/css">
+		.headerbar {
+			text-align: center;
+			padding: 50px;
+			background-color: #033;
+			color: white;
+		}
+
+		.opt {
+			width: 100%;
+			text-align: center;
+			background-color: #999;
+		}
+
+		.corr {
+			width: 100%;
+			text-align: center;
+			background-color: green;
+		}
+
+		.incorr {
+			width: 100%;
+			text-align: center;
+			background-color: red;
+		}
+
+
+	</style>
+	<script type="text/javascript" src= "{{url_for('static', filename='scripts/jquery-3.3.1.min.js')}}"></script>
+	<script type="text/javascript" src= "{{url_for('static', filename='scripts/bootstrap.min.js')}}"></script>
+	<script type="text/javascript" src= "{{url_for('static', filename='scripts/angular.min.js')}}"></script>
+	<!-- <script type="text/javascript" src= "{{url_for('static', filename='scripts/flashcard.js')}}"></script> -->
+	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/bootstrap.min.css')}}">
+<!-- 	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/flashcard.css')}}"> -->
+
+	<script type="text/javascript">
+		obj = {
+			xhr: new XMLHttpRequest(),
+			getQuestion: function() {
+				this.xhr.onreadystatechange = this.showQuestion;
+				this.xhr.open("GET", "getQuestion.py", true);
+				this.xhr.send();
+			},
+			showQuestion: function() {
+				if (this.readyState == 4 && this.status == 200) {
+					var res = JSON.parse(this.responseText);
+					console.log(res);
+				}
+			},
+			updateUser: function() {
+				var param = { "word" : "xyz", "correct" : 0 };
+				//this.xhr.onreadystatechange = this.receiveAck;
+				this.xhr.open("POST", "updateUser.py", true);
+				this.xhr.setRequestHeader("Content-type", "application/x-www-url-encoded");
+				this.xhr.send(param);	
+			}	
+		}
+
+		angular.module('gameApp', [])
+			.controller('MainCtrl', [ '$http', '$scope', function ($http, $scope) {
+				var self = this;
+				
+				//this.wordses = [["word1", false], ["word2", false], ["word3", true], ["word4", false]];
+				
+				this.get_questions = function(){
+					$http.get("/question").then(function(resp){
+						console.log(resp);
+						
+
+						// parse JSON response, populate Q + options
+						
+						self.question_text = resp.data.question_text;
+						self.question_word = resp.data.question_word;
+						self.wordses = resp.data.wordses;
+						self.userClicked = false;
+						self.selected = -1;
+						self.correct = false;
+						var api_key = "a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5";
+						// $http.get("https://api.wordnik.com/v4/word.json/"+self.question_word+"/definitions?limit=1&includeRelated=false&sourceDictionaries=wiktionary&useCanonical=false&includeTags=false&api_key="+api_key).then(function(resp){
+						// 		console.log(resp[0].text);
+						// }, function(err){});
+					}, function(err){
+						// handle error gracefully
+					});
+				}
+
+				this.update_user = function() {
+					//console.log("{{session['userID']}}");
+					var userID = "{{session['userID']}}"
+					var params = { "userID": userID, "word" : self.question_word, "correct" : self.correct };
+					console.log(params);
+					console.log(typeof(params));
+					$http.post("/updateuser", params, {headers:{"Content-Type": "application/json"}}).then(function(resp) {
+						self.get_questions();
+					}, function(err) {});
+				}
+
+
+				this.handle_click = function(iscorr, index) {
+					self.userClicked = true;
+					self.selected = index;
+
+				}	
+				this.getoptclass = function(iscorr, index){
+					
+					if (self.userClicked){
+						// Conditionally applies class when user selects an option
+						if (iscorr) {
+							return "corr";
+							self.correct = true;
+						}	
+						else if(index === self.selected) {
+							return "incorr";
+						}
+						else {
+							return "opt";
+						}
+					}
+					else {
+						// User is yet to select an option
+						return "opt";
+					}
+				}
+
+				$scope.load = self.get_questions();
+			}]);
+	</script>
+</head>
+<body>
+	<div ng-controller="MainCtrl as ctrl" >
+		<div class="headerbar">
+			Shabd
+		</div>
+		<div id="wrapper" ng-init="load()">
+			<div id="qWrap" class="row">
+				<div class="col-md-4 col-sm-1"></div>
+				<div class="col-md-4 col-sm-10">
+					<div id="qtype" ng-bind="ctrl.question_text"></div>
+					<div id="qword" ng-bind="ctrl.question_word"></div>
+				</div>
+				<div class="col-md-4 col-sm-1"></div>
+			</div>
+			<div id="aWrap" class="row">
+				<div class="col-md-3 col-sm-1"></div>
+				<div class="col-md-6 col-sm-10" >
+					<div ng-repeat="word in ctrl.wordses">
+<!-- 						<div class='flashcard-container'>
+						  <div id='flipper' class='flashcard-flipper'>
+						    <div class='front'>
+						      <i id='hints-button' class="fa fa-question-circle-o"></i>
+						      <i id='front-button' class="fa fa-arrow-left"></i>
+						      <div id='front-content' class='content' ng-click="ctrl.handle_click(word[1], $index)">
+						        <div class='middle'>
+						          <div id='front-inner-content' ng-bind="word[0]" class='inner'>
+						          </div>
+						          <div id='hints' class='inner hints'> <!-- add ng-click to get word meaning -->
+<!-- 						            <p id="hint0">Hint 1</p>
+						            <p id="hint1">Hint 2</p>
+						            <p id="hint2">Last hint</p>
+						          </div>
+						        </div>
+						      </div>
+						    </div>
+						    <div class='back'>
+						      <div id='back-content' class='content' >
+						        <div class='middle'>
+						          <div id='back-inner-content' ng-bind="word[1]" class='solution inner'>
+						          </div>
+						          <div id='ranking' class=footer>
+						            <table>
+						              <tr>
+						                <td><p class='circle'>1</p></td>
+						                <td><p class='circle'>2</p></td>
+						                <td><p class='circle'>3</p></td>
+						              </tr>
+						            </table>
+						          </div>
+						        </div>
+						      </div>
+						    </div>
+						  </div>
+						</div>
+ -->
+
+						<button ng-bind="word[0]" class="btns" ng-class="ctrl.getoptclass(word[1], $index)" ng-click="ctrl.handle_click(word[1], $index)" ng-disabled="ctrl.userClicked === true"></button>
+					</div>
+				</div>
+				<div class="col-md-3 col-sm-1"></div>
+			</div>
+			<div>
+				<button ng-if="ctrl.userClicked === true" ng-click="ctrl.update_user()" >next</button>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+
+
+<!-- https://davidwalsh.name/css-flip; accessed 03/16/17 -->

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html ng-app="registerApp">
+<head>
+	<title>Game</title>
+	<script type="text/javascript" src= "{{url_for('static', filename='scripts/angular.min.js')}}"></script>
+	<script type="text/javascript" src="{{url_for('static', filename='scripts/login.js')}}"></script>
+	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/login.css')}}" />
+</head>
+<body ng-controller="registerCtrl as ctrl">
+	<div class="wrapper">
+		<div class="container">
+			<h1>Welcome</h1>
+			
+			<form name="registerForm" action="http://localhost:5000/register" method="POST" class="form" ng-submit="ctrl.submit()">
+				<input type="text" name="uname" ng-model="ctrl.user.name" placeholder="Username" required ng-minlength="4" />
+				<span ng-show="registerForm.uname.$error.required">This is a required field</span>
+				<span ng-show="registerForm.uname.$error.minlength">Minimum length is 4</span>
+				<input type="password" name="pwd" ng-model="ctrl.user.password" placeholder="Password" required />
+				<button type="submit" id="register-button">Register</button>
+			</form>
+		</div>
+		
+		<ul class="bg-bubbles">
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+		</ul>
+
+	
+	</div>
+
+	<script type="text/javascript">
+		angular.module('registerApp', [])
+			.controller('registerCtrl', [ function () {
+				// var self = this;
+				// self.submit = function () {
+				// 	// body...
+				// 	console.log(self.user);
+				// }
+			}]);
+	</script> 
+</body>
+</html>

@@ -1,0 +1,126 @@
+.flashcard-container {
+  font-family: Tahoma, Geneva, sans-serif;
+  perspective: 1000px; /* adds realistic-looking perspective to flip action */
+  padding: 5px;
+  background-color: black;
+}
+
+.flashcard-container,
+.front,
+.back {
+  width: 400px;
+  height: 250px;
+  border-radius: 10px;
+}
+
+.flashcard-flipper {
+  transition: 1s;
+  transform-style: preserve-3d;
+  position: relative;
+}
+
+.front,
+.back {
+  /* not sure how much of this is needed for Electron */
+  -webkit-backface-visibility: hidden;
+	-moz-backface-visibility: hidden;
+  -o-backface-visibility: hidden;
+  backface-visibility: hidden;
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #e7fef8;
+}
+
+.front {
+  z-index: 2; /* moves the front forward */
+}
+
+.back {
+  transform: rotateY(180deg);
+}
+
+/* flip the pane when clicked */
+.rotateBack {
+	transform: rotateY(-180deg);
+}
+
+.rotateHint {
+	transform: rotateX(-360deg);
+}
+
+/* http://stackoverflow.com/questions/396145/how-to-vertically-center-a-div-for-all-browsers; by Billbad; accessed 03/16/17 */
+.content {
+  display: table;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+
+.middle {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.inner {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hints {
+    display: none;
+}
+
+.hints p,
+.solution p {
+  border-bottom: thin solid #0aaf82;
+  text-align: center;
+  visibility: hidden;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+i {
+  position: absolute;
+  padding: 10px;
+  z-index: 3; /* in front of everything so it can be clicked on */
+}
+
+.fa {
+  font-size: 1.5em;
+}
+
+.fa-arrow-left {
+  display: none;
+}
+
+.footer {
+  width: 100%;
+  position: absolute;
+  bottom: 5px;
+  visibility: hidden; /* don't allow ranking til all the solution is visible */
+}
+
+table {
+  display: inline; /* allows it to be centred */
+}
+
+td p {
+  margin: 0 30px; /* space between cells */
+}
+
+/* http://stackoverflow.com/questions/16615403/css-how-to-draw-circle-with-text-in-middle
+by Jawad
+accessed 03/18/17 */
+.circle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-size: 12px;
+    color: #fff;
+    line-height: 30px;
+    text-align: center;
+    background: #0aaf82;
+}
