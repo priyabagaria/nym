@@ -33,8 +33,10 @@
 	<script type="text/javascript" src= "{{url_for('static', filename='scripts/jquery-3.3.1.min.js')}}"></script>
 	<script type="text/javascript" src= "{{url_for('static', filename='scripts/bootstrap.min.js')}}"></script>
 	<script type="text/javascript" src= "{{url_for('static', filename='scripts/angular.min.js')}}"></script>
+	<script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
 	<!-- <script type="text/javascript" src= "{{url_for('static', filename='scripts/flashcard.js')}}"></script> -->
 	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/bootstrap.min.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/style.css')}}">
 <!-- 	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/flashcard.css')}}"> -->
 
 	<script type="text/javascript">
@@ -112,8 +114,10 @@
 						if (iscorr) {
 							return "corr";
 							self.correct = true;
+							self.resp = "CORRECT !";
 						}	
 						else if(index === self.selected) {
+							self.resp = "WRONG!";
 							return "incorr";
 						}
 						else {
@@ -185,8 +189,19 @@
 						  </div>
 						</div>
  -->
+ <article class="flashcard">
+  <input type="checkbox" />
+    <section ng-bind = "word[0]" ng-class="ctrl.getoptclass(word[1], $index)" ng-click="ctrl.handle_click(word[1], $index)" ng-disabled="ctrl.userClicked === true">
+       
+    </section>
+    
+    <section ng-bind="resp" ng-class="back" >
+      
+    </section>
+  </label>
+</article>
 
-						<button ng-bind="word[0]" class="btns" ng-class="ctrl.getoptclass(word[1], $index)" ng-click="ctrl.handle_click(word[1], $index)" ng-disabled="ctrl.userClicked === true"></button>
+					<!--	<button ng-bind="word[0]" class="btns" ng-class="ctrl.getoptclass(word[1], $index)" ng-click="ctrl.handle_click(word[1], $index)" ng-disabled="ctrl.userClicked === true"></button>-->
 					</div>
 				</div>
 				<div class="col-md-3 col-sm-1"></div>
